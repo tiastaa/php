@@ -157,7 +157,7 @@ echo "</table>";
         <input type="text"  name="fullname" placeholder="Fullname"> <br>
         <input type="text" name="sex" placeholder="Sex"> <br>
         <input type="number" name="age"  placeholder="Age"> <br>
-        <input type="number" name="country" placeholder="Country"><br>
+        <input type="text" name="country" placeholder="Country"><br>
         <input type="text" name="marks" placeholder="Marks"><br>
         <input type="submit" name="btn-ok" value="ok">
 
