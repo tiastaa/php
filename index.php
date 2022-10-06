@@ -1,11 +1,11 @@
 <?php
 /*1. 4. Об’єкт “Турнір” (Код, ПІБ; стать; вік; назва країни, за яку він виступає; оцінки по трьох видах змагань). Запит учасників з країни Х, вік яких не менший за Y.*/
 session_start();
-$_SESSION["accounting"] = null;
-if (isset($_SESSION["accounting"])){
-    $accounting = $_SESSION["accounting"];
+$_SESSION["competition"] = null;
+if (isset($_SESSION["competition"])){
+    $competition = $_SESSION["competition"];
 }else{
-    $accounting = [
+    $competition = [
         [
             'code'=> 1,
             'fullname' => "Nika Andriivna Otter",
@@ -40,13 +40,13 @@ if (isset($_SESSION["accounting"])){
         ],
     ];
 }
-function getId($accounting){
-    for($i = 0; $i < count($accounting); $i++){
-        if($_GET["id"] == $accounting[$i]["code"]){
-            $max = $accounting[0]["code"];
-            for($j = 0; $j < count($accounting); $j++){
-                if($accounting[$j]["code"] > $max){
-                    $max = $accounting[$j]["code"];
+function getId($competition){
+    for($i = 0; $i < count($competition); $i++){
+        if($_GET["id"] == $competition[$i]["code"]){
+            $max = $competition[0]["code"];
+            for($j = 0; $j < count($competition); $j++){
+                if($competition[$j]["code"] > $max){
+                    $max = $competition[$j]["code"];
                 }
             }
             $max++;
@@ -56,15 +56,15 @@ function getId($accounting){
     return $_GET["code"];
 }
 if($_GET["edit"] != null){
-    for($i = 0; $i < count($accounting); $i++){
-        if($_GET["edit"] == $accounting[$i]["code"]){
-            $accounting[$i] = ["code" => getId($accounting),
+    for($i = 0; $i < count($competition); $i++){
+        if($_GET["edit"] == $competition[$i]["code"]){
+            $competition[$i] = ["code" => getId($competition),
                 "fullname" => $_GET["fullname"],
                 "sex" => $_GET["sex"],
                 "age" => $_GET["age"],
                 "country" => $_GET["country"],
                 'marks' => $_GET['marks']];
-            $_SESSION["accounting"] = $accounting;
+            $_SESSION["competition"] = $competition;
             break;
         }
     }
@@ -90,13 +90,13 @@ else{
         $_GET["marks"] = "0 0 0";
     }
 
-    $accounting[] = ["code" => getId($accounting),
+    $competition[] = ["code" => getId($competition),
         "fullname" => $_GET["fullname"],
         "sex" => $_GET["sex"],
         "age" => $_GET["age"],
         "country" => $_GET["country"],
         "marks" => $_GET["marks"]];
-    $_SESSION["Competition"] = $accounting;
+    $_SESSION["Competition"] = $competition;
 }
 function getMemberByCountryAndByAge($arr, $country,$age){
     $newArr = [];
@@ -112,9 +112,9 @@ function getMemberByCountryAndByAge($arr, $country,$age){
 echo "<h2>Таблиця всіх значень</h2>";
 echo "<table>";
 echo "<tr> <th>Code</th> <th>Fullname</th> <th>Sex</th> <th>Age</th> <th>Country</th> <th>Marks</th> </tr>";
-for($i = 0; $i < count($accounting); $i++){
+for($i = 0; $i < count($competition); $i++){
     echo "<tr>";
-    foreach ($accounting[$i] as $key=>$value){
+    foreach ($competition[$i] as $key=>$value){
         if($value != null){
             echo "<td>$value</td>";
         }
@@ -125,7 +125,7 @@ for($i = 0; $i < count($accounting); $i++){
 }
 echo "</table>";
 
-$arr = getMemberByCountryAndByAge($accounting,"ua",15);
+$arr = getMemberByCountryAndByAge($competition,"ua",15);
 echo "<h2>Таблиця запиту</h2>";
 echo "<table>";
 echo "<tr> <th>Code</th> <th>Fullname</th> <th>Sex</th> <th>Age</th> <th>Country</th> <th>Marks</th> </tr>";
