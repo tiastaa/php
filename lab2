@@ -1,0 +1,261 @@
+<?php
+
+function defaultDataCompetitors()
+{
+    return [
+        [
+            'id'=> 1,
+            'name' => "Nika",
+            'sex' => "female",
+            'age'=>18,
+            'country'=> "ua",
+            'marks'=>"10 10 10"
+        ],
+        [
+            'id'=> 2,
+            'name' => "Oleg",
+            'sex' => "male",
+            'age'=>32,
+            'country'=> "uk",
+            'marks'=>"4 9 2"
+        ],
+        [
+            'id'=> 3,
+            'name' => "Mika",
+            'sex' => "female",
+            'age'=>43,
+            'country'=> "sk",
+            'marks'=>"5 7 3"
+        ],
+        [
+            'id'=> 4,
+            'name' => "Ivan",
+            'sex' => "male",
+            'age'=>12,
+            'country'=> "us",
+            'marks'=>"2 8 5"
+        ],
+    ];
+}
+
+function CreateNewCompetitor($array, $id)
+{
+    return [
+        'id' => $id,
+        'name' => $array['name'],
+        'sex' => $array['sex'],
+        'age' => $array['age'],
+        'country' => $array['country'],
+        'marks' => $array['marks'],
+    ];
+}
+
+function validationDataCompetitors($array)
+{
+    return !(
+        empty($array['name']) ||
+        empty($array['sex']) ||
+        empty($array['age']) ||
+        empty($array['country']) ||
+        empty($array['marks']) ||
+        $array['age'] < 0 ||
+        !isset($array)
+    );
+}
+
+
+function getMemberByCountryAndByAge($arr, $country, $age)
+{
+    return array_filter(
+        $arr,
+        function ($value) use ($country, $age) {
+            return ($value["country"] == $country and $value["age"] > $age);
+        }
+    );
+}
+
+function displayTableCompetitors($array, $caption)
+{
+    $table = '<table>';
+    $table .= "<caption> $caption </caption>";
+    $table .= '<tr> <th>id</th> <th>name</th> <th>sex</th> <th>age</th> <th>country</th> <th>marks</th> </tr>';
+
+    foreach ($array as $item) {
+        $table .= "<tr>" .
+            "<td>$item[id]</td><td>$item[name]</td><td>$item[sex]</td>" .
+            "<td>$item[age]</td><td>$item[country]</td><td>$item[marks]</td>" .
+            "</tr>";
+    }
+
+    $table .= '</table>';
+    echo $table;
+}
+
+if (!isset($_SESSION)) {
+    session_start();
+}
+
+// setting default values
+if (empty($_SESSION)) {
+    $_SESSION['Competitors'] = defaultDataCompetitors();
+}
+
+$actionToDo = $_POST['action'];
+
+// adding Competitor
+if ($actionToDo == 'add') {
+    if (validationDataCompetitors($_POST)) {
+        $nextCompetitorId = count($_SESSION['Competitors']) + 1;
+        $_SESSION['Competitors'][] = CreateNewCompetitor($_POST, $nextCompetitorId);
+    }
+} // editing Competitor
+elseif ($actionToDo == 'edit') {
+    if (validationDataCompetitors($_POST)) {
+        $idToEdit = $_POST['id'];
+        foreach ($_SESSION['Competitors'] as $key => $value) {
+            if ($value['id'] == $idToEdit) {
+                $_SESSION['Competitors'][$key] = CreateNewCompetitor($_POST, $idToEdit);
+                break;
+            }
+        }
+    }
+} // filtering Competitors
+elseif ($actionToDo == 'filter') {
+    displayTableCompetitors(
+        getMemberByCountryAndByAge($_SESSION['Competitors'], $_POST['name'], $_POST['time']),
+        'Specified Competitors'
+    );
+} // saving data to competitors.txt
+elseif ($actionToDo == 'save') {
+    $file = fopen("competitors.txt", "w");
+    fwrite($file, serialize($_SESSION['Competitors']));
+    fclose($file);
+} // loading data from competitors.txt
+elseif ($actionToDo == 'load') {
+    $_SESSION['Competitors'] = unserialize(file_get_contents("competitors.txt"));
+}
+
+// display all clients
+displayTableCompetitors($_SESSION['Competitors'], 'Competitors');
+
+unset($_POST);
+?>
+<br>
+
+<button onclick="ShowAddForm()"> ADD</button>
+<button onclick="ShowEditForm()"> EDIT</button>
+<button onclick="ShowFilterForm()"> FILTER</button>
+
+<br>
+
+<form action='<?= $_SERVER['PHP_SELF'] ?>' method='post' id='addForm'>
+    ADD <br>
+    <label> name:
+        <input type='text' name='name'>
+    </label><br>
+    <label> sex:
+        <input type='text' name='sex'>
+    </label><br>
+    <label> age:
+        <input type='number' name='age'>
+    </label><br>
+    <label> country:
+        <input type='text' name='country'>
+    </label><br>
+    <label> marks:
+        <input type='text' name='marks'>
+    </label><br>
+    <input type='hidden' name='action' value='add'>
+    <input type='submit' value='add'>
+</form>
+
+<br>
+
+<form action='<?= $_SERVER['PHP_SELF'] ?>' method='post' id='editForm'>
+    EDIT <br>
+    <label> id:
+        <input type='number' name='id'>
+    </label><br>
+    <label> name:
+        <input type='text' name='name'>
+    </label><br>
+    <label> sex:
+        <input type='text' name='sex'>
+    </label><br>
+    <label> age:
+        <input type='number' name='age'>
+    </label><br>
+    <label> country:
+        <input type='text' name='country'>
+    </label><br>
+    <label> marks:
+        <input type='text' name='marks'>
+    </label><br>
+    <input type='hidden' name='action' value='edit'>
+    <input type='submit' value='edit'>
+</form>
+
+<br>
+
+<form action='<?= $_SERVER['PHP_SELF'] ?>' method='post' id='filterForm'>
+    Filter <br>
+    <label> age:
+        <input type='number' name='age'>
+    </label><br>
+    <label> country:
+        <input type='text' name='country'>
+    </label><br>
+    <input type='hidden' name='action' value='filter'>
+    <input type='submit' value='filter'>
+</form>
+
+<form action='<?= $_SERVER['PHP_SELF'] ?>' method='post' id='save'>
+    <input type='hidden' name='action' value='save'>
+    <input type='submit' value='Save to file'>
+</form>
+
+<form action='<?= $_SERVER['PHP_SELF'] ?>' method='post' id='load'>
+    <input type='hidden' name='action' value='load'>
+    <input type='submit' value='Upload from file'>
+</form>
+
+<style>
+    #addForm {
+        display: none;
+    }
+
+    #editForm {
+        display: none;
+    }
+
+    #filterForm {
+        display: none;
+    }
+
+    table, th, td {
+        border: 1px solid;
+        text-align: center;
+    }
+
+    th {
+        width: 100px;
+    }
+
+    td {
+        height: 50px;
+    }
+</style>
+
+<script>
+    function ShowAddForm() {
+        document.querySelector('#addForm').style.display = 'inline';
+    }
+
+    function ShowEditForm() {
+        document.querySelector('#editForm').style.display = 'inline';
+    }
+
+    function ShowFilterForm() {
+        document.querySelector('#filterForm').style.display = 'inline';
+    }
+</script>
