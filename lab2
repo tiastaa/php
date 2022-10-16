@@ -58,7 +58,7 @@ function validationDataCompetitors($array)
         empty($array['age']) ||
         empty($array['country']) ||
         empty($array['marks']) ||
-        $array['age'] < 0 ||
+        $array['age'] > 0 ||
         !isset($array)
     );
 }
