@@ -128,7 +128,7 @@ echo $_SESSION['Competitors']->displayCompetitors();
     }
 
     table, th, td {
-        border: 1px solid;
+        border: 1px solid #8e1e32;
         text-align: center;
     }
 
