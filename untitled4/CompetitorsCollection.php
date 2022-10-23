@@ -2,7 +2,7 @@
 
 class CompetitorsCollection
 {
-    public $competiotors;
+    public $competitors;
 
     public function __construct()
     {
@@ -10,7 +10,7 @@ class CompetitorsCollection
 
     public function defaultCompetitors()
     {
-        $this->clients = [
+        $this->competitors = [
             new Competitor(1, [
                 'id'=> 1,
                 'name' => "Nika",
@@ -62,7 +62,7 @@ class CompetitorsCollection
         return array_filter(
             $this->competitors,
             function ($value) use ($country, $age) {
-                return ($value["country"] == $country and $value["age"] > $age);
+                return ($value->country == $country and $value->age > $age);
             }
         );
     }
@@ -74,26 +74,26 @@ class CompetitorsCollection
 
     public function editCompetitor($array)
     {
-        $client = $this->getCompetitorById($array['id']);
-        if (!(empty($client))) {
-            $client->name = $array['id'];
-            $client->sex = $array['sex'];
-            $client->age = $array['age'];
-            $client->country = $array['country'];
-            $client->marks = $array['marks'];
+        $competitor = $this->getCompetitorById($array['id']);
+        if (!(empty($competitor))) {
+            $competitor->name = $array['id'];
+            $competitor->sex = $array['sex'];
+            $competitor->age = $array['age'];
+            $competitor->country = $array['country'];
+            $competitor->marks = $array['marks'];
         }
     }
 
     public function saveCompetitors()
     {
         $file = fopen("competitors.txt", "w");
-        fwrite($file, serialize($this->competiotors));
+        fwrite($file, serialize($this->competitors));
         fclose($file);
     }
 
     public function loadCompetitors()
     {
-        $this->competiotors = unserialize(file_get_contents("competitors.txt"));
+        $this->competitors = unserialize(file_get_contents("competitors.txt"));
     }
 
     public function displayCompetitors()
@@ -104,7 +104,7 @@ class CompetitorsCollection
 
         foreach ($this->competitors as $item) {
             $table .= "<tr><td>$item->id</td><td>$item->name</td><td>$item->sex</td>" .
-                "<td>$item->age</td><td>$item->country</td><td>$item->masks</td></tr>";
+                "<td>$item->age</td><td>$item->country</td><td>$item->marks</td></tr>";
         }
 
         $table .= '</table>';
